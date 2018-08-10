@@ -9,6 +9,12 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>9</version>
+    </parent>
+
     <distributionManagement>
         <snapshotRepository>
             <id>oss</id>
@@ -29,7 +35,7 @@
         </license>
     </licenses>
 
-    <name>Json-Utils</name>
+    <name>Cache</name>
     <url>https://github.com/duanxinyuan/cache.git</url>
     <description>缓存库，支持caffeine、guava、redis、redis-cluster，支持两级缓存配置</description>
 
@@ -55,9 +61,27 @@
 
     <dependencies>
         <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+            <version>2.6.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>25.0-jre</version>
         </dependency>
 
         <dependency>
