@@ -3,6 +3,7 @@ package com.dxy.library.cache.cache.redis.single;
 import com.dxy.common.util.ConfigUtil;
 import com.dxy.common.util.ListUtil;
 import com.dxy.library.cache.cache.redis.IRedis;
+import com.dxy.library.cache.cache.redis.util.BitHashUtil;
 import com.dxy.library.json.GsonUtil;
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
@@ -908,6 +909,46 @@ public class CacheRedisSingle implements IRedis {
         } catch (Exception e) {
             log.error("bitpos error, key: {}, value: {}, start: {}, end: {}", key, value, start, end, e);
             return null;
+        }
+    }
+
+    @Override
+    public <T> boolean bloomadd(String key, T value) {
+        if (StringUtils.isEmpty(key) || value == null) {
+            return false;
+        }
+        try (Jedis jedis = jedisPool.getResource()) {
+            boolean bloomconstains = bloomcons(key, value);
+            if (bloomconstains) {
+                return false;
+            }
+            long[] offsets = BitHashUtil.getBitOffsets(value);
+            for (long offset : offsets) {
+                jedis.setbit(key, offset, true);
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("bloomadd error, key: {}, value: {}", key, value, e);
+            return false;
+        }
+    }
+
+    @Override
+    public <T> boolean bloomcons(String key, T value) {
+        if (StringUtils.isEmpty(key) || value == null) {
+            return false;
+        }
+        try (Jedis jedis = jedisPool.getResource()) {
+            long[] offsets = BitHashUtil.getBitOffsets(value);
+            for (long offset : offsets) {
+                if (!jedis.getbit(key, offset)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            log.error("bloomcons error, key: {}, value: {}", key, value, e);
+            return false;
         }
     }
 

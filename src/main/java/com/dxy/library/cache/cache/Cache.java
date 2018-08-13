@@ -520,6 +520,45 @@ public class Cache implements IRedis {
     }
 
     @Override
+    public <T> boolean bloomadd(String key, T value) {
+        boolean bloomadd = redis.bloomadd(key, value);
+        if (isEnableMenory && bloomadd) {
+            String valueStr;
+            if (value instanceof String) {
+                valueStr = (String) value;
+            } else {
+                valueStr = GsonUtil.to(value);
+            }
+            memory.set(key + valueStr, true);
+        }
+        return bloomadd;
+    }
+
+    @Override
+    public <T> boolean bloomcons(String key, T value) {
+        Boolean bloomcons;
+        if (isEnableMenory) {
+            String valueStr;
+            if (value instanceof String) {
+                valueStr = (String) value;
+            } else {
+                valueStr = GsonUtil.to(value);
+            }
+            bloomcons = memory.get(key + valueStr);
+            if (BooleanUtils.isTrue(bloomcons)) {
+                return bloomcons;
+            }
+            bloomcons = redis.bloomcons(key, value);
+            if (bloomcons) {
+                memory.set(key + valueStr, bloomcons);
+            }
+            return bloomcons;
+        } else {
+            return redis.bloomcons(key, value);
+        }
+    }
+
+    @Override
     public Long pfadd(String key, String value, int seconds) {
         return redis.pfadd(key, value, seconds);
     }

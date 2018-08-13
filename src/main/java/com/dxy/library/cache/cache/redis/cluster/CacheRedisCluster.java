@@ -3,6 +3,7 @@ package com.dxy.library.cache.cache.redis.cluster;
 import com.dxy.common.util.ConfigUtil;
 import com.dxy.common.util.ListUtil;
 import com.dxy.library.cache.cache.redis.IRedis;
+import com.dxy.library.cache.cache.redis.util.BitHashUtil;
 import com.dxy.library.json.GsonUtil;
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
@@ -653,6 +654,36 @@ public class CacheRedisCluster implements IRedis {
             return null;
         }
         return jedisCluster.bitpos(key, value, new BitPosParams(start, end));
+    }
+
+    @Override
+    public <T> boolean bloomadd(String key, T value) {
+        if (StringUtils.isEmpty(key) || value == null) {
+            return false;
+        }
+        boolean bloomconstains = bloomcons(key, value);
+        if (bloomconstains) {
+            return false;
+        }
+        long[] offsets = BitHashUtil.getBitOffsets(value);
+        for (long offset : offsets) {
+            jedisCluster.setbit(key, offset, true);
+        }
+        return true;
+    }
+
+    @Override
+    public <T> boolean bloomcons(String key, T value) {
+        if (StringUtils.isEmpty(key) || value == null) {
+            return false;
+        }
+        long[] offsets = BitHashUtil.getBitOffsets(value);
+        for (long offset : offsets) {
+            if (!jedisCluster.getbit(key, offset)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override

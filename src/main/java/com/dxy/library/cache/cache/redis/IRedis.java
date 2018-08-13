@@ -403,6 +403,19 @@ public interface IRedis {
      */
     Long bitpos(String key, boolean value, long start, long end);
 
+    /**
+     * 添加指定值到BloomFilter中，返回True表示添加成功，返回False表示filter中已经存在该值
+     * @param value 值
+     */
+    <T> boolean bloomadd(String key, T value);
+
+    /**
+     * 判断指定值在BloomFilter中是否已经存在，返回True表示存在，返回false表示不存在
+     * @param value 值
+     */
+    <T> boolean bloomcons(String key, T value);
+
+
     /********** 一下为分布式锁相关操作 ************/
 
     /**
