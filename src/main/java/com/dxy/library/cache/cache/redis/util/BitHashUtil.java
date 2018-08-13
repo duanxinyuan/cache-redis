@@ -12,6 +12,9 @@ import java.nio.charset.StandardCharsets;
  */
 public class BitHashUtil {
 
+    //Redis的Bitmap最大比特位为2的32次方，占用空间512M
+    private static long MAX_BIT_COUNT = (long) Math.pow(2, 32);
+
     public static void main(String[] args) {
         long[] offsets = getBitOffsets("9367c37a1d9977b1180eb1865ebc5d2061d1edf1");
         System.out.println(GsonUtil.to(offsets));
@@ -23,8 +26,7 @@ public class BitHashUtil {
      * @param value Hash的值
      */
     public static <T> long[] getBitOffsets(T value) {
-        long maxBitCount = (long) Math.pow(2, 32);
-        return murmurHash(value, 8, maxBitCount);
+        return murmurHash(value, 8, MAX_BIT_COUNT);
     }
 
 
