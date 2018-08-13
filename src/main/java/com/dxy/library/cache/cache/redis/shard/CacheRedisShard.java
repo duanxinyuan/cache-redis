@@ -7,12 +7,10 @@ import com.dxy.library.json.GsonUtil;
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import redis.clients.jedis.JedisPoolConfig;
-import redis.clients.jedis.JedisShardInfo;
-import redis.clients.jedis.ShardedJedis;
-import redis.clients.jedis.ShardedJedisPool;
+import redis.clients.jedis.*;
 
 import java.util.*;
 
@@ -805,6 +803,119 @@ public class CacheRedisShard implements IRedis {
     }
 
     @Override
+    public boolean setbit(String key, long offset, boolean value) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            return BooleanUtils.toBoolean(jedis.setbit(key, offset, value));
+        } catch (Exception e) {
+            log.error("setbit error, key: {}, offset: {}, value: {}", key, offset, value, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean setbit(String key, long offset, String value) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            return BooleanUtils.toBoolean(jedis.setbit(key, offset, value));
+        } catch (Exception e) {
+            log.error("setbit error, key: {}, offset: {}, value: {}", key, offset, value, e);
+            return false;
+        }
+    }
+
+    @Override
+    public boolean getbit(String key, long offset) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            return BooleanUtils.toBoolean(jedis.getbit(key, offset));
+        } catch (Exception e) {
+            log.error("getbit error, key: {}, offset: {}", key, offset, e);
+            return false;
+        }
+    }
+
+    @Override
+    public Long bitcount(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            return jedis.bitcount(key);
+        } catch (Exception e) {
+            log.error("getbit error, key: {}", key, e);
+            return null;
+        }
+    }
+
+    @Override
+    public Long bitcount(String key, long start, long end) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            return jedis.bitcount(key, start, end);
+        } catch (Exception e) {
+            log.error("getbit error, key: {}, start: {}, end: {}", key, start, end, e);
+            return null;
+        }
+    }
+
+    @Override
+    public Long bitop(BitOP op, String destKey, String... srcKeys) {
+        if (op == null || StringUtils.isEmpty(destKey) || srcKeys == null || srcKeys.length == 0) {
+            return null;
+        }
+        //ShardedJedis不支持bitop操作
+        return null;
+    }
+
+    @Override
+    public List<Long> bitfield(String key, String... arguments) {
+        if (StringUtils.isEmpty(key) || arguments == null || arguments.length == 0) {
+            return null;
+        }
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            return jedis.bitfield(key, arguments);
+        } catch (Exception e) {
+            log.error("bitfield error, key: {}, arguments: {}", key, GsonUtil.to(arguments), e);
+            return null;
+        }
+    }
+
+    @Override
+    public Long bitpos(String key, boolean value) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            return jedis.bitpos(key, value);
+        } catch (Exception e) {
+            log.error("bitpos error, key: {}, value: {}", key, value, e);
+            return null;
+        }
+    }
+
+    @Override
+    public Long bitpos(String key, boolean value, long start, long end) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            return jedis.bitpos(key, value, new BitPosParams(start, end));
+        } catch (Exception e) {
+            log.error("bitpos error, key: {}, value: {}, start: {}, end: {}", key, value, start, end, e);
+            return null;
+        }
+    }
+
+    @Override
     public boolean getDistributedLock(String lockKey, String requestId, int expireTime) {
         if (StringUtils.isEmpty(lockKey) || requestId == null) {
             return false;
@@ -813,7 +924,7 @@ public class CacheRedisShard implements IRedis {
             String result = jedis.set(lockKey, requestId, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, expireTime);
             return LOCK_SUCCESS.equals(result);
         } catch (Exception e) {
-            log.error("getDistributedLock error, key: {}, requestId:{}, expireTime:{}", lockKey, requestId, expireTime, e);
+            log.error("getDistributedLock error, key: {}, requestId: {}, expireTime: {}", lockKey, requestId, expireTime, e);
             return false;
         }
     }
@@ -828,7 +939,7 @@ public class CacheRedisShard implements IRedis {
             Object result = (jedis.getShard(lockKey)).eval(script, Collections.singletonList(lockKey), Collections.singletonList(requestId));
             return RELEASE_SUCCESS.equals(result);
         } catch (Exception e) {
-            log.error("releaseDistributedLock error, key:{}, requestId:{}", lockKey, requestId, e);
+            log.error("releaseDistributedLock error, key: {}, requestId: {}", lockKey, requestId, e);
             return false;
         }
     }

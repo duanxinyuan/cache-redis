@@ -13,6 +13,7 @@ import com.dxy.library.json.GsonUtil;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
+import redis.clients.jedis.BitOP;
 
 import java.util.List;
 import java.util.Map;
@@ -471,6 +472,51 @@ public class Cache implements IRedis {
     @Override
     public Long pfcount(String key) {
         return redis.pfcount(key);
+    }
+
+    @Override
+    public boolean setbit(String key, long offset, boolean value) {
+        return redis.setbit(key, offset, value);
+    }
+
+    @Override
+    public boolean setbit(String key, long offset, String value) {
+        return redis.setbit(key, offset, value);
+    }
+
+    @Override
+    public boolean getbit(String key, long offset) {
+        return redis.getbit(key, offset);
+    }
+
+    @Override
+    public Long bitcount(String key) {
+        return redis.bitcount(key);
+    }
+
+    @Override
+    public Long bitcount(String key, long start, long end) {
+        return redis.bitcount(key, start, end);
+    }
+
+    @Override
+    public Long bitop(BitOP op, String destKey, String... srcKeys) {
+        return redis.bitop(op, destKey, srcKeys);
+    }
+
+    @Override
+    public List<Long> bitfield(String key, String... arguments) {
+        return redis.bitfield(key, arguments);
+    }
+
+    @Override
+    public Long bitpos(String key, boolean value) {
+        return redis.bitpos(key, value);
+    }
+
+    @Override
+    public Long bitpos(String key, boolean value, long start, long end) {
+        return redis.bitpos(key, value, start, end);
     }
 
     @Override

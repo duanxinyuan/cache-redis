@@ -77,5 +77,12 @@ public class CacheTest {
         System.out.println("pfadd: " + cache.pfadd("text_dxy_pf", "pf1"));
         System.out.println("pfcount: " + GsonUtil.to(cache.pfcount("text_dxy_pf")));
         cache.del("text_dxy_pf");
+
+        System.out.println("\n");
+        System.out.println("setbit: " + cache.setbit("text_dxy_bit", 10000, true));
+        System.out.println("getbit: " + cache.getbit("text_dxy_bit", 10000));
+        System.out.println("bitcount: " + cache.bitcount("text_dxy_bit"));
+        System.out.println("bitpos: " + GsonUtil.to(cache.bitpos("text_dxy_bit", true)));
+        cache.del("text_dxy_bit");
     }
 }

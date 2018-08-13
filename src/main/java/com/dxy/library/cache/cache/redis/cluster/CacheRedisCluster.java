@@ -6,11 +6,10 @@ import com.dxy.library.cache.cache.redis.IRedis;
 import com.dxy.library.json.GsonUtil;
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisCluster;
-import redis.clients.jedis.JedisPoolConfig;
+import redis.clients.jedis.*;
 
 import java.util.*;
 
@@ -582,6 +581,78 @@ public class CacheRedisCluster implements IRedis {
             return null;
         }
         return jedisCluster.pfcount(key);
+    }
+
+    @Override
+    public boolean setbit(String key, long offset, boolean value) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        return BooleanUtils.toBoolean(jedisCluster.setbit(key, offset, value));
+    }
+
+    @Override
+    public boolean setbit(String key, long offset, String value) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        return BooleanUtils.toBoolean(jedisCluster.setbit(key, offset, value));
+    }
+
+    @Override
+    public boolean getbit(String key, long offset) {
+        if (StringUtils.isEmpty(key)) {
+            return false;
+        }
+        return BooleanUtils.toBoolean(jedisCluster.getbit(key, offset));
+    }
+
+    @Override
+    public Long bitcount(String key) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        return jedisCluster.bitcount(key);
+    }
+
+    @Override
+    public Long bitcount(String key, long start, long end) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        return jedisCluster.bitcount(key, start, end);
+    }
+
+    @Override
+    public Long bitop(BitOP op, String destKey, String... srcKeys) {
+        if (op == null || StringUtils.isEmpty(destKey) || srcKeys == null || srcKeys.length == 0) {
+            return null;
+        }
+        return jedisCluster.bitop(op, destKey, srcKeys);
+    }
+
+    @Override
+    public List<Long> bitfield(String key, String... arguments) {
+        if (StringUtils.isEmpty(key) || arguments == null || arguments.length == 0) {
+            return null;
+        }
+        return jedisCluster.bitfield(key, arguments);
+    }
+
+    @Override
+    public Long bitpos(String key, boolean value) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        return jedisCluster.bitpos(key, value);
+    }
+
+    @Override
+    public Long bitpos(String key, boolean value, long start, long end) {
+        if (StringUtils.isEmpty(key)) {
+            return null;
+        }
+        return jedisCluster.bitpos(key, value, new BitPosParams(start, end));
     }
 
     @Override

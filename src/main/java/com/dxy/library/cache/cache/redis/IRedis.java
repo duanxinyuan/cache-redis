@@ -1,6 +1,7 @@
 package com.dxy.library.cache.cache.redis;
 
 import com.google.gson.reflect.TypeToken;
+import redis.clients.jedis.BitOP;
 
 import java.util.List;
 import java.util.Map;
@@ -328,6 +329,79 @@ public interface IRedis {
      * 获取使用hyperloglog算法的元素数量
      */
     Long pfcount(String key);
+
+    /********** 一下为Bitmap相关操作 ************/
+    /**
+     * 使用Bitmap算法设置值，返回修改之前该偏移量所在位置的值
+     * @param offset 偏移量
+     * @param value 该偏移量所在位置的值，false/true，对应0/1
+     */
+    boolean setbit(String key, long offset, boolean value);
+
+    /**
+     * 使用Bitmap算法设置值，返回修改之前该偏移量所在位置的值
+     * @param offset 偏移量
+     * @param value 该偏移量所在位置的值，存入bit中会转化为二进制
+     */
+    boolean setbit(String key, long offset, String value);
+
+    /**
+     * 获取Bitmap某个位置的值，返回true/false，对应1/0，
+     * 当 offset 比字符串值的长度大，或者 key 不存在时，返回 false
+     * @param offset 偏移量
+     */
+    boolean getbit(String key, long offset);
+
+    /**
+     * 获取Bitmap中所有值为 1 的位的个数
+     */
+    Long bitcount(String key);
+
+    /**
+     * 获取Bitmap中所有值为 1 的位的个数
+     * @param start 和end一样表示起始结束位，-1 表示最后一个字节， -2表示倒数第二个字节
+     */
+    Long bitcount(String key, long start, long end);
+
+    /**
+     * 对一个或多个保存二进制位的字符串 key 进行位元操作，并将结果保存到 destkey 上
+     * 返回保存到 destkey 的字符串的长度（和输入 key 中最长的字符串长度相等）
+     * @param op 操作类型，如下四种
+     * AND-求逻辑并，将多个Key的值转化为二进制取 交集，再转化为原数据类型
+     * OR-求逻辑或，将多个Key的值转化为二进制取 并集，再转化为原数据类型
+     * XOR-求逻辑异或，将多个Key的值转化为二进制取 并集，再执行逻辑非操作，得到相反值，再转化为原数据类型
+     * NOT-求逻辑非，只能针对一个Key操作，将Key的值转化为二进制，再将所有比特位的值 反转，0变1，1变0
+     * @param destKey 保存的结果Key
+     * @param srcKeys 被操作的Key集合
+     */
+    Long bitop(BitOP op, String destKey, String... srcKeys);
+
+    /**
+     * 对多个位范围进行子操作，返回子操作集合的结果列表
+     * @param arguments 子操作集合，支持的子命令如下：
+     * GET <type> <offset> —— 返回指定的二进制位范围
+     * SET <type> <offset> <value> —— 对指定的二进制位范围进行设置，并返回它的旧值
+     * INCRBY <type> <offset> <increment> —— 对指定的二进制位范围执行加法操作，并返回它的旧值，传入负值表示减法操作。
+     * 操作示例：BITFIELD mykey INCRBY i8 100 1 GET u4 0
+     * 该命令实现的作用：对位于偏移量 100 的 8 位长有符号整数执行加法操作， 并获取位于偏移量 0 上的 4 位长无符号整数
+     */
+    List<Long> bitfield(String key, String... arguments);
+
+    /**
+     * 获取string的二进制中第一个0或1的位置
+     * 如果指定了查询区间，无论查询0或是1，在没查询到的时候只会返回-1。
+     * 在没有指定查询区间时，查询bit位为1的位置时，如果string中没有该位，则会返回-1，表示未查询到
+     * @param value 值，false/true，对应0/1
+     */
+    Long bitpos(String key, boolean value);
+
+    /**
+     * 获取string的二进制中第一个0或1的位置
+     * 如果指定了查询区间，无论查询0或是1，在没查询到的时候只会返回-1。
+     * 在没有指定查询区间时，查询bit位为1的位置时，如果string中没有该位，则会返回-1，表示未查询到
+     * @param value 值，false/true，对应0/1
+     */
+    Long bitpos(String key, boolean value, long start, long end);
 
     /********** 一下为分布式锁相关操作 ************/
 
