@@ -28,7 +28,7 @@ public class CacheTest {
         testPf();
         testBit();
         testBloom();
-     }
+    }
 
 
     @Test
@@ -124,12 +124,22 @@ public class CacheTest {
 
     @Test
     public void testBloom() {
-        System.out.println(Clock.systemUTC().millis());
-        System.out.println("bloomadd: " + cache.bloomadd("text_dxy_bloom", "alskdahsdoaishydoiauysod"));
-        System.out.println(Clock.systemUTC().millis());
-        System.out.println("bloomcons: " + cache.bloomcons("text_dxy_bloom", "alskdahsdoaishydoiauysod"));
-        System.out.println(Clock.systemUTC().millis());
-        System.out.println("bloomcons: " + cache.bloomcons("text_dxy_bloom", "abc"));
+        //测试错误率
+        int failCount = 0;
+        for (int i = 0; i < 10000000; i++) {
+            if (!cache.bloomadd("text_dxy_bloom", String.valueOf(i))) {
+                failCount++;
+            }
+        }
+        System.out.println("failCount: " + failCount);
         cache.del("text_dxy_bloom");
+
+//        System.out.println(Clock.systemUTC().millis());
+//        System.out.println("bloomadd: " + cache.bloomadd("text_dxy_bloom", "alskdahsdoaishydoiauysod"));
+//        System.out.println(Clock.systemUTC().millis());
+//        System.out.println("bloomcons: " + cache.bloomcons("text_dxy_bloom", "alskdahsdoaishydoiauysod"));
+//        System.out.println(Clock.systemUTC().millis());
+//        System.out.println("bloomcons: " + cache.bloomcons("text_dxy_bloom", "abc"));
+//        cache.del("text_dxy_bloom");
     }
 }
