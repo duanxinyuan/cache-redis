@@ -1,10 +1,10 @@
-package com.dxy.library.cache.cache.redis.shard;
+package com.dxy.library.cache.redis.shard;
 
-import com.dxy.common.util.ConfigUtil;
-import com.dxy.common.util.ListUtil;
-import com.dxy.library.cache.cache.redis.IRedis;
-import com.dxy.library.cache.cache.redis.util.BitHashUtil;
-import com.dxy.library.json.GsonUtil;
+import com.dxy.library.cache.redis.IRedis;
+import com.dxy.library.cache.redis.util.BitHashUtil;
+import com.dxy.library.json.gson.GsonUtil;
+import com.dxy.library.util.common.ListUtils;
+import com.dxy.library.util.common.config.ConfigUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +32,12 @@ public class CacheRedisShard implements IRedis {
 
     public CacheRedisShard() {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.shard.max.total"), 100));
-        config.setMaxIdle(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.shard.max.idle"), 50));
-        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.shard.max.wait.millis"), 5000));
+        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.shard.max.total"), 100));
+        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.shard.max.idle"), 50));
+        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.shard.max.wait.millis"), 5000));
         config.setTestOnBorrow(true);
 
-        String hostsStr = ConfigUtil.getConfig("cache.redis.shard.nodes");
+        String hostsStr = ConfigUtils.getConfig("cache.redis.shard.nodes");
         String[] hostPorts = hostsStr.split(",");
         List<JedisShardInfo> shards = new ArrayList<>();
         for (String hostPort : hostPorts) {
@@ -45,7 +45,7 @@ public class CacheRedisShard implements IRedis {
             String host = strings[0];
             int port = strings.length > 1 ? NumberUtils.toInt(strings[1].trim(), 6379) : 6379;
             JedisShardInfo jedisShardInfo = new JedisShardInfo(host, port);
-            String password = ConfigUtil.getConfig("cache.redis.shard.password");
+            String password = ConfigUtils.getConfig("cache.redis.shard.password");
             if (StringUtils.isNotEmpty(password)) {
                 jedisShardInfo.setPassword(password);
             }
@@ -290,7 +290,7 @@ public class CacheRedisShard implements IRedis {
 
     @Override
     public <T> Long lpush(String key, List<T> values, int seconds) {
-        if (StringUtils.isEmpty(key) || !ListUtil.isNN(values) || seconds < 0) {
+        if (StringUtils.isEmpty(key) || ListUtils.isEmpty(values) || seconds < 0) {
             return null;
         }
         try (ShardedJedis jedis = jedisPool.getResource()) {
@@ -348,7 +348,7 @@ public class CacheRedisShard implements IRedis {
 
     @Override
     public <T> Long rpush(String key, List<T> values, int seconds) {
-        if (StringUtils.isEmpty(key) || !ListUtil.isNN(values) || seconds < 0) {
+        if (StringUtils.isEmpty(key) || ListUtils.isEmpty(values) || seconds < 0) {
             return null;
         }
         try (ShardedJedis jedis = jedisPool.getResource()) {

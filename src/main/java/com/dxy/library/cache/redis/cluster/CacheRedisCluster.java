@@ -1,10 +1,10 @@
-package com.dxy.library.cache.cache.redis.cluster;
+package com.dxy.library.cache.redis.cluster;
 
-import com.dxy.common.util.ConfigUtil;
-import com.dxy.common.util.ListUtil;
-import com.dxy.library.cache.cache.redis.IRedis;
-import com.dxy.library.cache.cache.redis.util.BitHashUtil;
-import com.dxy.library.json.GsonUtil;
+import com.dxy.library.cache.redis.IRedis;
+import com.dxy.library.cache.redis.util.BitHashUtil;
+import com.dxy.library.json.gson.GsonUtil;
+import com.dxy.library.util.common.ListUtils;
+import com.dxy.library.util.common.config.ConfigUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.BooleanUtils;
@@ -30,11 +30,11 @@ public class CacheRedisCluster implements IRedis {
 
     public CacheRedisCluster() {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.cluster.max.total"), 100));
-        config.setMaxIdle(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.cluster.max.idle"), 50));
-        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.cluster.max.wait.millis"), 5000));
+        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.cluster.max.total"), 100));
+        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.cluster.max.idle"), 50));
+        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.cluster.max.wait.millis"), 5000));
         config.setTestOnBorrow(true);
-        String hostsStr = ConfigUtil.getConfig("cache.redis.cluster.nodes");
+        String hostsStr = ConfigUtils.getConfig("cache.redis.cluster.nodes");
         String[] hostPorts = hostsStr.split(",");
         HashSet<HostAndPort> hostSet = new HashSet<>();
         for (String hostPort : hostPorts) {
@@ -43,7 +43,7 @@ public class CacheRedisCluster implements IRedis {
             int port = strings.length > 1 ? NumberUtils.toInt(strings[1].trim(), 6379) : 6379;
             hostSet.add(new HostAndPort(host, port));
         }
-        String password = ConfigUtil.getConfig("cache.redis.cluster.password");
+        String password = ConfigUtils.getConfig("cache.redis.cluster.password");
         if (StringUtils.isEmpty(password)) {
             jedisCluster = new JedisCluster(hostSet, config);
         } else {
@@ -212,7 +212,7 @@ public class CacheRedisCluster implements IRedis {
 
     @Override
     public <T> Long lpush(String key, List<T> values, int seconds) {
-        if (StringUtils.isEmpty(key) || !ListUtil.isNN(values) || seconds < 0) {
+        if (StringUtils.isEmpty(key) || ListUtils.isEmpty(values) || seconds < 0) {
             return null;
         }
         String[] strings = new String[values.size()];
@@ -260,7 +260,7 @@ public class CacheRedisCluster implements IRedis {
 
     @Override
     public <T> Long rpush(String key, List<T> values, int seconds) {
-        if (StringUtils.isEmpty(key) || !ListUtil.isNN(values) || seconds < 0) {
+        if (StringUtils.isEmpty(key) || ListUtils.isEmpty(values) || seconds < 0) {
             return null;
         }
         ArrayList<String> strings = Lists.newArrayList();

@@ -1,10 +1,10 @@
-package com.dxy.library.cache.cache.redis.single;
+package com.dxy.library.cache.redis.single;
 
-import com.dxy.common.util.ConfigUtil;
-import com.dxy.common.util.ListUtil;
-import com.dxy.library.cache.cache.redis.IRedis;
-import com.dxy.library.cache.cache.redis.util.BitHashUtil;
-import com.dxy.library.json.GsonUtil;
+import com.dxy.library.cache.redis.IRedis;
+import com.dxy.library.cache.redis.util.BitHashUtil;
+import com.dxy.library.json.gson.GsonUtil;
+import com.dxy.library.util.common.ListUtils;
+import com.dxy.library.util.common.config.ConfigUtils;
 import com.google.common.collect.Lists;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
@@ -32,17 +32,17 @@ public class CacheRedisSingle implements IRedis {
 
     public CacheRedisSingle() {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.single.max.total"), 100));
-        config.setMaxIdle(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.single.max.idle"), 50));
-        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.single.max.wait.millis"), 5000));
+        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.single.max.total"), 100));
+        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.single.max.idle"), 50));
+        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.single.max.wait.millis"), 5000));
         config.setTestOnBorrow(true);
 
-        String hostsStr = ConfigUtil.getConfig("cache.redis.single.nodes");
-        int database = NumberUtils.toInt(ConfigUtil.getConfig("cache.redis.single.database"));
+        String hostsStr = ConfigUtils.getConfig("cache.redis.single.nodes");
+        int database = NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.single.database"));
         String[] strings = hostsStr.split(":");
         String host = strings[0];
         int port = strings.length > 1 ? NumberUtils.toInt(strings[1].trim(), 6379) : 6379;
-        String password = ConfigUtil.getConfig("cache.redis.single.password");
+        String password = ConfigUtils.getConfig("cache.redis.single.password");
 
         jedisPool = new JedisPool(config, host, port, 2000, password, database);
     }
@@ -294,7 +294,7 @@ public class CacheRedisSingle implements IRedis {
 
     @Override
     public <T> Long lpush(String key, List<T> values, int seconds) {
-        if (StringUtils.isEmpty(key) || !ListUtil.isNN(values) || seconds < 0) {
+        if (StringUtils.isEmpty(key) || ListUtils.isEmpty(values) || seconds < 0) {
             return null;
         }
         try (Jedis jedis = jedisPool.getResource()) {
@@ -352,7 +352,7 @@ public class CacheRedisSingle implements IRedis {
 
     @Override
     public <T> Long rpush(String key, List<T> values, int seconds) {
-        if (StringUtils.isEmpty(key) || !ListUtil.isNN(values) || seconds < 0) {
+        if (StringUtils.isEmpty(key) || ListUtils.isEmpty(values) || seconds < 0) {
             return null;
         }
         try (Jedis jedis = jedisPool.getResource()) {

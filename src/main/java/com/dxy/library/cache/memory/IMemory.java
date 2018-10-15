@@ -1,4 +1,4 @@
-package com.dxy.library.cache.cache.memory;
+package com.dxy.library.cache.memory;
 
 /**
  * 内存缓存器

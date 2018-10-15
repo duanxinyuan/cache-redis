@@ -1,7 +1,7 @@
-package com.dxy.library.cache.cache.memory.caffeine;
+package com.dxy.library.cache.memory.caffeine;
 
-import com.dxy.common.util.ConfigUtil;
-import com.dxy.library.cache.cache.memory.IMemory;
+import com.dxy.library.cache.memory.IMemory;
+import com.dxy.library.util.common.config.ConfigUtils;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
@@ -27,11 +27,11 @@ public class CacheCaffeine implements IMemory {
 
     public CacheCaffeine() {
         cache = Caffeine.newBuilder()
-                .initialCapacity(NumberUtils.toInt(ConfigUtil.getConfig("cache.caffeine.key.capacity.initial"), 1000))
-                .maximumSize(NumberUtils.toInt(ConfigUtil.getConfig("cache.caffeine.key.capacity.max"), 5_0000))
-                .expireAfterWrite(NumberUtils.toInt(ConfigUtil.getConfig("cache.caffeine.expire.senconds.after.write"), 300), TimeUnit.SECONDS)
-                .expireAfterAccess(NumberUtils.toInt(ConfigUtil.getConfig("cache.caffeine.expire.senconds.after.access"), 300), TimeUnit.SECONDS)
-                .refreshAfterWrite(NumberUtils.toInt(ConfigUtil.getConfig("cache.caffeine.refresh.senconds.after.write"), 300), TimeUnit.SECONDS)
+                .initialCapacity(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.key.capacity.initial"), 1000))
+                .maximumSize(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.key.capacity.max"), 5_0000))
+                .expireAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.expire.senconds.after.write"), 300), TimeUnit.SECONDS)
+                .expireAfterAccess(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.expire.senconds.after.access"), 300), TimeUnit.SECONDS)
+                .refreshAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.refresh.senconds.after.write"), 300), TimeUnit.SECONDS)
                 .recordStats()
                 .build(new CacheLoader<String, Optional<Object>>() {
                     @Nullable

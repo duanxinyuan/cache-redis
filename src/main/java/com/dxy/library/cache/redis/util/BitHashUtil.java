@@ -1,6 +1,6 @@
-package com.dxy.library.cache.cache.redis.util;
+package com.dxy.library.cache.redis.util;
 
-import com.dxy.library.json.GsonUtil;
+import com.dxy.library.json.gson.GsonUtil;
 import redis.clients.util.MurmurHash;
 
 import java.nio.charset.StandardCharsets;

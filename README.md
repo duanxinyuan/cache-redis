@@ -1,5 +1,5 @@
-# cache
-缓存库，支持caffeine、guava、redis、redis-cluster，支持两级缓存配置，支持布隆过滤器
+# Cache
+缓存库，支持caffeine、guava、redis、redis-cluster，支持两级缓存配置，支持布隆过滤器，支持Redis分布式锁
 
 ## Maven依赖：
 ```xml
@@ -11,49 +11,52 @@
 ```
 
 ## 使用示例：
-    Cache cache = Cache.getInstance();
     
-    普通字符串操作：
-    cache.set
-    cache.get
-    cache.del
-    cache.exists
-    cache.expire
-    cache.persist
+    //key value
+    Cache.set
+    Cache.get
+    Cache.del
+    Cache.exists
+    Cache.expire
+    Cache.persist
     
-    //键值对原子操作
-    cache.setnx
+    //key value
+    Cache.setnx
     
-    //list操作
-    cache.lpush
-    cache.rpush
-    cache.lindex
-    cache.lrangePage
-    cache.lrem
+    //list
+    Cache.lpush
+    Cache.rpush
+    Cache.lindex
+    Cache.lrangePage
+    Cache.lrem
     
-    //set操作
-    cache.sadd
-    cache.sismember
-    cache.smembers
+    //set
+    Cache.sadd
+    Cache.sismember
+    Cache.smembers
     
-    //map操作
-    cache.hset
-    cache.hmset
-    cache.hget
-    cache.hgetAll
+    //hash
+    Cache.hset
+    Cache.hmset
+    Cache.hget
+    Cache.hgetAll
     
-    //hyperloglog操作
-    cache.pfadd
-    cache.pfcount
+    //hyperloglog
+    Cache.pfadd
+    Cache.pfcount
   
-    //bitmap操作
-    cache.setbit
-    cache.getbit
-    cache.bitcount
-    cache.bitop
-    cache.bitfield
-    cache.bitpos
+    //bitmap
+    Cache.setbit
+    Cache.getbit
+    Cache.bitcount
+    Cache.bitop
+    Cache.bitfield
+    Cache.bitpos
   
     //bloomfilter
-    cache.bloomadd
-    cache.bloomcons
+    Cache.bloomadd
+    Cache.bloomcons
+
+    //distributed lock
+    Cache.getDistributedLock
+    Cache.releaseDistributedLock

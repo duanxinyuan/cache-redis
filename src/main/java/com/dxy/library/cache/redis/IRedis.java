@@ -1,4 +1,4 @@
-package com.dxy.library.cache.cache.redis;
+package com.dxy.library.cache.redis;
 
 import com.google.gson.reflect.TypeToken;
 import redis.clients.jedis.BitOP;
