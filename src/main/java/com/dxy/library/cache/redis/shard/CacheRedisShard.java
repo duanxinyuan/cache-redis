@@ -64,7 +64,21 @@ public class CacheRedisShard implements IRedis {
         if (StringUtils.isEmpty(key) || value == null) {
             return null;
         }
-        return set(key, GsonUtil.to(value), seconds);
+        try (ShardedJedis jedis = jedisPool.getResource()) {
+            String set;
+            if (value instanceof String) {
+                set = jedis.set(key, (String) value);
+            } else {
+                set = jedis.set(key, GsonUtil.to(value));
+            }
+            if (seconds > 0) {
+                jedis.expire(key, seconds);
+            }
+            return set;
+        } catch (Exception e) {
+            log.error("set error, key: {}, value: {}, seconds: {}", key, value, seconds, e);
+            return null;
+        }
     }
 
     @Override

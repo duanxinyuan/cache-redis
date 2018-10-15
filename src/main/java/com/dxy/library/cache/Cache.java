@@ -64,14 +64,22 @@ public class Cache {
 
     public static <T> String set(String key, T value) {
         if (IS_MEMORY_ENABLE) {
-            memory.set(key, value);
+            if (value instanceof String) {
+                memory.set(key, value);
+            } else {
+                memory.set(key, GsonUtil.to(value));
+            }
         }
         return redis.set(key, value);
     }
 
     public static <T> String set(String key, T value, int seconds) {
         if (IS_MEMORY_ENABLE) {
-            memory.set(key, value);
+            if (value instanceof String) {
+                memory.set(key, value);
+            } else {
+                memory.set(key, GsonUtil.to(value));
+            }
         }
         return redis.set(key, value, seconds);
     }
@@ -86,15 +94,14 @@ public class Cache {
     }
 
     public static String get(String key) {
-        String value;
         if (IS_MEMORY_ENABLE) {
-            value = memory.get(key);
+            String value = memory.get(key);
             if (StringUtils.isNotEmpty(value)) {
                 return value;
             }
         }
 
-        value = redis.get(key);
+        String value = redis.get(key);
         if (IS_MEMORY_ENABLE && StringUtils.isNotEmpty(value)) {
             memory.set(key, value);
         }
@@ -102,15 +109,14 @@ public class Cache {
     }
 
     public static <T> T get(String key, Class<T> c) {
-        String value;
         if (IS_MEMORY_ENABLE) {
-            value = memory.get(key);
+            String value = memory.get(key);
             if (StringUtils.isNotEmpty(value)) {
                 return GsonUtil.from(value, c);
             }
         }
 
-        value = redis.get(key);
+        String value = redis.get(key);
         if (IS_MEMORY_ENABLE && StringUtils.isNotEmpty(value)) {
             memory.set(key, value);
         }
@@ -118,15 +124,14 @@ public class Cache {
     }
 
     public static <T> T get(String key, TypeToken<T> typeToken) {
-        String value = null;
         if (IS_MEMORY_ENABLE) {
-            value = memory.get(key);
-        }
-        if (StringUtils.isNotEmpty(value)) {
-            return GsonUtil.from(value, typeToken);
+            String value = memory.get(key);
+            if (StringUtils.isNotEmpty(value)) {
+                return GsonUtil.from(value, typeToken);
+            }
         }
 
-        value = redis.get(key);
+        String value = redis.get(key);
         if (IS_MEMORY_ENABLE && StringUtils.isNotEmpty(value)) {
             memory.set(key, value);
         }
@@ -316,17 +321,16 @@ public class Cache {
     }
 
     public static Set<String> smembers(String key) {
-        Set<String> set;
         if (IS_MEMORY_ENABLE) {
-            set = memory.get(key);
-            if (set != null && set.size() != 0) {
-                return set;
+            String value = memory.get(key);
+            if (StringUtils.isNotEmpty(value)) {
+                return GsonUtil.from(value, new TypeToken<Set<String>>() {});
             }
         }
 
-        set = redis.smembers(key);
+        Set<String> set = redis.smembers(key);
         if (IS_MEMORY_ENABLE && set != null && set.size() != 0) {
-            memory.set(key, set);
+            memory.set(key, GsonUtil.to(set));
         }
         return set;
     }
@@ -360,17 +364,19 @@ public class Cache {
     }
 
     public static String hget(String key, String field) {
-        Map<String, String> map;
         if (IS_MEMORY_ENABLE) {
-            map = memory.get(key);
-            if (map != null && map.containsKey(field)) {
-                return map.get(field);
+            String value = memory.get(key);
+            if (StringUtils.isNotEmpty(value)) {
+                Map<String, String> map = GsonUtil.from(value, new TypeToken<Map<String, String>>() {});
+                if (map != null && map.containsKey(field)) {
+                    return map.get(field);
+                }
             }
         }
 
         String value = redis.hget(key, field);
         if (IS_MEMORY_ENABLE && StringUtils.isNotEmpty(value)) {
-            memory.set(key, redis.hgetAll(key));
+            memory.set(key, GsonUtil.to(redis.hgetAll(key)));
         }
         return value;
     }
@@ -384,16 +390,16 @@ public class Cache {
     }
 
     public static Map<String, String> hgetAll(String key) {
-        Map<String, String> map;
         if (IS_MEMORY_ENABLE) {
-            map = memory.get(key);
+            String value = memory.get(key);
+            Map<String, String> map = GsonUtil.from(value, new TypeToken<Map<String, String>>() {});
             if (map != null && !map.isEmpty()) {
                 return map;
             }
         }
-        map = redis.hgetAll(key);
+        Map<String, String> map = redis.hgetAll(key);
         if (IS_MEMORY_ENABLE && map != null && !map.isEmpty()) {
-            memory.set(key, map);
+            memory.set(key, GsonUtil.to(map));
         }
         return map;
     }
