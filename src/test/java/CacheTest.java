@@ -7,6 +7,7 @@ import org.junit.Test;
  * 2018/8/9 20:04
  */
 public class CacheTest {
+    public int timeout = 60;
 
     @Test
     public void testAll() {
@@ -24,7 +25,7 @@ public class CacheTest {
 
     @Test
     public void testString() {
-        System.out.println("set: " + Cache.set("text_dxy", "123456"));
+        System.out.println("set: " + Cache.set("text_dxy", "123456", timeout));
         System.out.println("get: " + Cache.get("text_dxy"));
         System.out.println("set: " + Cache.set("text_dxy", "789"));
         System.out.println("get: " + Cache.get("text_dxy"));
@@ -38,7 +39,7 @@ public class CacheTest {
 
     @Test
     public void testNx() {
-        System.out.println("setnx: " + Cache.setnx("text_dxy_nx", "123456"));
+        System.out.println("setnx: " + Cache.setnx("text_dxy_nx", "123456",timeout));
         System.out.println("get: " + Cache.get("text_dxy_nx"));
         System.out.println("setnx: " + Cache.setnx("text_dxy_nx", "789"));
         System.out.println("get: " + Cache.get("text_dxy_nx"));
@@ -47,21 +48,21 @@ public class CacheTest {
 
     @Test
     public void testNumber() {
-        System.out.println("incr: " + Cache.incr("text_dxy_number", 10));
+        System.out.println("incr: " + Cache.incr("text_dxy_number", 10,timeout));
         System.out.println("get: " + Cache.get("text_dxy_number"));
-        System.out.println("decr: " + Cache.decr("text_dxy_number", 5));
+        System.out.println("decr: " + Cache.decr("text_dxy_number", 5,timeout));
         System.out.println("get: " + Cache.get("text_dxy_number"));
         Cache.del("text_dxy_number");
     }
 
     @Test
     public void testList() {
-        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "1"));
-        System.out.println("rpush: " + Cache.rpush("text_dxy_list", "rpush"));
-        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "2"));
-        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "3"));
-        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "4"));
-        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "5"));
+        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "1",timeout));
+        System.out.println("rpush: " + Cache.rpush("text_dxy_list", "rpush",timeout));
+        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "2",timeout));
+        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "3",timeout));
+        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "4",timeout));
+        System.out.println("lpush: " + Cache.lpush("text_dxy_list", "5",timeout));
         System.out.println("lrange: " + GsonUtil.to(Cache.lrange("text_dxy_list", 1, 2)));
         System.out.println("lrange: " + GsonUtil.to(Cache.lrange("text_dxy_list", 10)));
         System.out.println("lrangePage: " + GsonUtil.to(Cache.lrangePage("text_dxy_list", 0, 15)));
@@ -87,9 +88,9 @@ public class CacheTest {
 
     @Test
     public void testMap() {
-        System.out.println("hset: " + Cache.hset("text_dxy_hset", "k1", "v1"));
+        System.out.println("hset: " + Cache.hset("text_dxy_hset", "k1", "v1",timeout));
         System.out.println("hget: " + Cache.hget("text_dxy_hset", "k1"));
-        System.out.println("hset: " + Cache.hset("text_dxy_hset", "k2", "v2"));
+        System.out.println("hset: " + Cache.hset("text_dxy_hset", "k2", "v2",timeout));
         System.out.println("hmset: " + Cache.hmset("text_dxy_hset", "k3", "v3", "k4", "v4"));
         System.out.println("hgetAll: " + GsonUtil.to(Cache.hgetAll("text_dxy_hset")));
         Cache.del("text_dxy_hset");
@@ -97,9 +98,9 @@ public class CacheTest {
 
     @Test
     public void testPf() {
-        System.out.println("pfadd: " + Cache.pfadd("text_dxy_pf", "pf1"));
+        System.out.println("pfadd: " + Cache.pfadd("text_dxy_pf", "pf1",timeout));
         System.out.println("pfcount: " + Cache.pfcount("text_dxy_pf"));
-        System.out.println("pfadd: " + Cache.pfadd("text_dxy_pf", "pf1"));
+        System.out.println("pfadd: " + Cache.pfadd("text_dxy_pf", "pf1",timeout));
         System.out.println("pfcount: " + GsonUtil.to(Cache.pfcount("text_dxy_pf")));
         Cache.del("text_dxy_pf");
     }
