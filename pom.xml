@@ -6,7 +6,7 @@
 
     <groupId>com.github.duanxinyuan</groupId>
     <artifactId>library-cache</artifactId>
-    <version>1.4.1</version>
+    <version>1.4.2</version>
     <packaging>jar</packaging>
 
     <parent>

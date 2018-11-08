@@ -32,17 +32,18 @@ public class CacheRedisSingle implements IRedis {
 
     public CacheRedisSingle() {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.single.max.total"), 100));
-        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.single.max.idle"), 50));
-        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.single.max.wait.millis"), 5000));
+        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.connection.max.total"), 100));
+        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.connection.max.idle"), 50));
+        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.max.wait.millis"), 5000));
         config.setTestOnBorrow(true);
 
-        String hostsStr = ConfigUtils.getConfig("cache.redis.single.nodes");
-        int database = NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.single.database"));
+        String hostsStr = ConfigUtils.getConfig("cache.redis.nodes");
+        //直接使用第0个database
+        int database = 0;
         String[] strings = hostsStr.split(":");
         String host = strings[0];
         int port = strings.length > 1 ? NumberUtils.toInt(strings[1].trim(), 6379) : 6379;
-        String password = ConfigUtils.getConfig("cache.redis.single.password");
+        String password = ConfigUtils.getConfig("cache.redis.password");
 
         jedisPool = new JedisPool(config, host, port, 2000, password, database);
     }

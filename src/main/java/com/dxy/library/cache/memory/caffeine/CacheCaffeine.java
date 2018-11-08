@@ -27,11 +27,11 @@ public class CacheCaffeine implements IMemory {
 
     public CacheCaffeine() {
         cache = Caffeine.newBuilder()
-                .initialCapacity(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.key.capacity.initial"), 1000))
-                .maximumSize(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.key.capacity.max"), 5_0000))
-                .expireAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.expire.senconds.after.write"), 300), TimeUnit.SECONDS)
-                .expireAfterAccess(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.expire.senconds.after.access"), 300), TimeUnit.SECONDS)
-                .refreshAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.caffeine.refresh.senconds.after.write"), 300), TimeUnit.SECONDS)
+                .initialCapacity(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.key.capacity.initial"), 1000))
+                .maximumSize(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.key.capacity.max"), 5_0000))
+                .expireAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.expire.seconds.after.write"), 300), TimeUnit.SECONDS)
+                .expireAfterAccess(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.expire.seconds.after.access"), 300), TimeUnit.SECONDS)
+                .refreshAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.refresh.seconds.after.write"), 300), TimeUnit.SECONDS)
                 .recordStats()
                 .build(new CacheLoader<String, Optional<Object>>() {
                     @Nullable

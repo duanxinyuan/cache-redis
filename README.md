@@ -6,8 +6,33 @@
 <dependency>
     <groupId>com.github.duanxinyuan</groupId>
     <artifactId>library-cache</artifactId>
-    <version>1.2.0</version>
+    <version>1.4.2</version>
 </dependency>
+```
+
+## 只需如下配置
+```text
+#是否使用内存
+cache.memory.enable=true
+#内存类型，guava/caffeine
+cache.memory.type=caffeine
+#Redis缓存类型，single/shard/cluster
+cache.redis.type=cluster
+#
+#Memory，如cache.memory.enable为true，必须配置
+cache.memory.key.capacity.initial=100
+cache.memory.key.capacity.max=50000
+cache.memory.expire.seconds.after.write=300
+cache.memory.expire.seconds.after.access=300
+cache.memory.refresh.seconds.after.write=300
+#
+#Redis，必须配置
+cache.redis.connection.max.total=100
+cache.redis.connection.max.idle=50
+cache.redis.max.wait.millis=5000
+cache.redis.nodes=127.0.0.1:6379,127.0.0.1:6379
+#没有密码不需要配置
+cache.redis.password=465a4sda1
 ```
 
 ## 使用示例：

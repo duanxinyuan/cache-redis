@@ -32,12 +32,12 @@ public class CacheRedisShard implements IRedis {
 
     public CacheRedisShard() {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.shard.max.total"), 100));
-        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.shard.max.idle"), 50));
-        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.shard.max.wait.millis"), 5000));
+        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.connection.max.total"), 100));
+        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.connection.max.idle"), 50));
+        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.max.wait.millis"), 5000));
         config.setTestOnBorrow(true);
 
-        String hostsStr = ConfigUtils.getConfig("cache.redis.shard.nodes");
+        String hostsStr = ConfigUtils.getConfig("cache.redis.nodes");
         String[] hostPorts = hostsStr.split(",");
         List<JedisShardInfo> shards = new ArrayList<>();
         for (String hostPort : hostPorts) {
@@ -45,7 +45,7 @@ public class CacheRedisShard implements IRedis {
             String host = strings[0];
             int port = strings.length > 1 ? NumberUtils.toInt(strings[1].trim(), 6379) : 6379;
             JedisShardInfo jedisShardInfo = new JedisShardInfo(host, port);
-            String password = ConfigUtils.getConfig("cache.redis.shard.password");
+            String password = ConfigUtils.getConfig("cache.redis.password");
             if (StringUtils.isNotEmpty(password)) {
                 jedisShardInfo.setPassword(password);
             }

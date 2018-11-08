@@ -30,11 +30,11 @@ public class CacheRedisCluster implements IRedis {
 
     public CacheRedisCluster() {
         JedisPoolConfig config = new JedisPoolConfig();
-        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.cluster.max.total"), 100));
-        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.cluster.max.idle"), 50));
-        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.cluster.max.wait.millis"), 5000));
+        config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.connection.max.total"), 100));
+        config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.connection.max.idle"), 50));
+        config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.max.wait.millis"), 5000));
         config.setTestOnBorrow(true);
-        String hostsStr = ConfigUtils.getConfig("cache.redis.cluster.nodes");
+        String hostsStr = ConfigUtils.getConfig("cache.redis.nodes");
         String[] hostPorts = hostsStr.split(",");
         HashSet<HostAndPort> hostSet = new HashSet<>();
         for (String hostPort : hostPorts) {
@@ -43,7 +43,7 @@ public class CacheRedisCluster implements IRedis {
             int port = strings.length > 1 ? NumberUtils.toInt(strings[1].trim(), 6379) : 6379;
             hostSet.add(new HostAndPort(host, port));
         }
-        String password = ConfigUtils.getConfig("cache.redis.cluster.password");
+        String password = ConfigUtils.getConfig("cache.redis.password");
         if (StringUtils.isEmpty(password)) {
             jedisCluster = new JedisCluster(hostSet, config);
         } else {

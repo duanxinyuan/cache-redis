@@ -26,11 +26,11 @@ public class CacheGuava implements IMemory {
 
     public CacheGuava() {
         cache = CacheBuilder.newBuilder()
-                .initialCapacity(NumberUtils.toInt(ConfigUtils.getConfig("cache.guava.key.capacity.initial"), 1000))
-                .maximumSize(NumberUtils.toInt(ConfigUtils.getConfig("cache.guava.key.capacity.max"), 5_0000))
-                .expireAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.guava.expire.senconds.after.write"), 5), TimeUnit.MINUTES)
-                .expireAfterAccess(NumberUtils.toInt(ConfigUtils.getConfig("cache.guava.expire.senconds.after.access"), 5), TimeUnit.MINUTES)
-                .refreshAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.guava.refresh.senconds.after.write"), 5), TimeUnit.MINUTES)
+                .initialCapacity(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.key.capacity.initial"), 1000))
+                .maximumSize(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.key.capacity.max"), 5_0000))
+                .expireAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.expire.seconds.after.write"), 5), TimeUnit.MINUTES)
+                .expireAfterAccess(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.expire.seconds.after.access"), 5), TimeUnit.MINUTES)
+                .refreshAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.refresh.seconds.after.write"), 5), TimeUnit.MINUTES)
                 .recordStats()//开启Guava Cache的统计功能
                 .removalListener((RemovalListener<String, Optional<Object>>) removalNotification -> {
                     if (log.isDebugEnabled()) {
