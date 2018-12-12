@@ -1,12 +1,12 @@
 # Cache
-缓存库，支持caffeine、guava、redis、redis-cluster，支持两级缓存配置，支持布隆过滤器，支持Redis分布式锁
+缓存库，支持caffeine、guava、redis、redis-sentinel、redis-sharding、redis-cluster，支持两级缓存配置，支持布隆过滤器，支持Redis分布式锁
 
 ## Maven依赖：
 ```xml
 <dependency>
     <groupId>com.github.duanxinyuan</groupId>
     <artifactId>library-cache</artifactId>
-    <version>1.4.2</version>
+    <version>1.5.0</version>
 </dependency>
 ```
 
@@ -16,7 +16,7 @@
 cache.memory.enable=true
 #内存类型，guava/caffeine
 cache.memory.type=caffeine
-#Redis缓存类型，single/shard/cluster
+#Redis缓存类型，single/sentinel/shard/cluster
 cache.redis.type=cluster
 #
 #Memory，如cache.memory.enable为true，必须配置

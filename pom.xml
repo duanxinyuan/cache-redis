@@ -6,7 +6,7 @@
 
     <groupId>com.github.duanxinyuan</groupId>
     <artifactId>library-cache</artifactId>
-    <version>1.4.2</version>
+    <version>1.5.0</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>com.github.duanxinyuan</groupId>
             <artifactId>library-util-common</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.6</version>
         </dependency>
 
         <dependency>
@@ -92,10 +92,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.8.0</version>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>8</source>
+                    <target>8</target>
                 </configuration>
             </plugin>
         </plugins>

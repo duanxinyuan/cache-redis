@@ -6,6 +6,7 @@ import com.dxy.library.cache.memory.caffeine.CacheCaffeine;
 import com.dxy.library.cache.memory.guava.CacheGuava;
 import com.dxy.library.cache.redis.IRedis;
 import com.dxy.library.cache.redis.cluster.CacheRedisCluster;
+import com.dxy.library.cache.redis.sentinel.CacheRedisSentinel;
 import com.dxy.library.cache.redis.shard.CacheRedisShard;
 import com.dxy.library.cache.redis.single.CacheRedisSingle;
 import com.dxy.library.json.gson.GsonUtil;
@@ -50,6 +51,9 @@ public class Cache {
         switch (redisCacheType) {
             case CacheType.Redis.single:
                 redis = new CacheRedisSingle();
+                break;
+            case CacheType.Redis.sentinel:
+                redis = new CacheRedisSentinel();
                 break;
             case CacheType.Redis.shard:
                 redis = new CacheRedisShard();
