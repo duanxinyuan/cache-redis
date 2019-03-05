@@ -15,11 +15,6 @@ public class BitHashUtil {
     //Redis的Bitmap最大比特位为2的32次方，占用空间512M
     private static long MAX_BIT_COUNT = (long) Math.pow(2, 32);
 
-    public static void main(String[] args) {
-        long[] offsets = getBitOffsets("9367c37a1d9977b1180eb1865ebc5d2061d1edf1");
-        System.out.println(GsonUtil.to(offsets));
-    }
-
     /**
      * 使用Redis的MurmurHash进行多次Hash获取bit的offset值
      * 2的32次方的Bitmap，8次Hash，错误率在万分之5以下，大约可以对4亿左右的32位字符串去重，对2亿左右的64位字符串去重
@@ -49,8 +44,6 @@ public class BitHashUtil {
         for (int i = 0; i < hashFunctionCount; ++i) {
             offsets[i] = Math.abs((hash1 + i * hash2) % maxBitCount);
         }
-//        BloomFilter<String> bloomFilter = BloomFilter.create(Funnels.stringFunnel(StandardCharsets.UTF_8), 10000000, 0.001F);
-//        bloomFilter.put();
         return offsets;
     }
 

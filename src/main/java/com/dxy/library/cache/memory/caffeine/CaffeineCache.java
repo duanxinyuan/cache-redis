@@ -2,17 +2,15 @@ package com.dxy.library.cache.memory.caffeine;
 
 import com.dxy.library.cache.memory.IMemory;
 import com.dxy.library.util.common.config.ConfigUtils;
-import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -21,11 +19,11 @@ import java.util.concurrent.TimeUnit;
  * 2018/8/8 19:48
  */
 @Slf4j
-public class CacheCaffeine implements IMemory {
+public class CaffeineCache implements IMemory {
 
     private LoadingCache<String, Optional<Object>> cache;
 
-    public CacheCaffeine() {
+    public CaffeineCache() {
         cache = Caffeine.newBuilder()
                 .initialCapacity(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.key.capacity.initial"), 1000))
                 .maximumSize(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.key.capacity.max"), 5_0000))
@@ -33,13 +31,7 @@ public class CacheCaffeine implements IMemory {
                 .expireAfterAccess(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.expire.seconds.after.access"), 300), TimeUnit.SECONDS)
                 .refreshAfterWrite(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.refresh.seconds.after.write"), 300), TimeUnit.SECONDS)
                 .recordStats()
-                .build(new CacheLoader<String, Optional<Object>>() {
-                    @Nullable
-                    @Override
-                    public Optional<Object> load(@Nonnull String key) {
-                        return Optional.fromNullable(get(key));
-                    }
-                });
+                .build(key -> Optional.ofNullable(get(key)));
     }
 
     @Override
@@ -50,7 +42,7 @@ public class CacheCaffeine implements IMemory {
         if (StringUtils.isEmpty(key) || value == null) {
             return;
         }
-        cache.put(key, Optional.fromNullable(value));
+        cache.put(key, Optional.ofNullable(value));
     }
 
     @Override
@@ -59,15 +51,10 @@ public class CacheCaffeine implements IMemory {
             return null;
         }
         Optional<Object> optional = cache.getIfPresent(key);
-        if (optional == null) {
+        if (!Objects.requireNonNull(optional).isPresent()) {
             return null;
         }
-        return (T) optional.orNull();
-    }
-
-    @Override
-    public boolean exist(String key) {
-        return get(key) != null;
+        return (T) optional.orElse(null);
     }
 
     @Override

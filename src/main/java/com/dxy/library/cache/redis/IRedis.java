@@ -299,6 +299,16 @@ public interface IRedis {
     String hget(String key, String field);
 
     /**
+     * 获取map中的某个键
+     */
+    <T> T hget(String key, String field, Class<T> c);
+
+    /**
+     * 获取map中的某个键
+     */
+    <T> T hget(String key, String field, TypeToken<T> typeToken);
+
+    /**
      * 增加map的某个数值
      */
     Long hincr(String key, String field, Integer value);

@@ -1,12 +1,12 @@
-# Cache
-缓存库，支持caffeine、guava、redis、redis-sentinel、redis-sharding、redis-cluster，支持两级缓存配置，支持布隆过滤器，支持Redis分布式锁
+# cache-redis
+Redis缓存库，支持caffeine、guava、redis、redis-sentinel、redis-sharding、redis-cluster，支持两级缓存配置，支持布隆过滤器，支持Redis分布式锁
 
 ## Maven依赖：
 ```xml
 <dependency>
     <groupId>com.github.duanxinyuan</groupId>
-    <artifactId>library-cache</artifactId>
-    <version>1.5.0</version>
+    <artifactId>library-cache-redis</artifactId>
+    <version>1.0.0</version>
 </dependency>
 ```
 
@@ -38,50 +38,50 @@ cache.redis.password=465a4sda1
 ## 使用示例：
     
     //key value
-    Cache.set
-    Cache.get
-    Cache.del
-    Cache.exists
-    Cache.expire
-    Cache.persist
+    RedisCache.set
+    RedisCache.get
+    RedisCache.del
+    RedisCache.exists
+    RedisCache.expire
+    RedisCache.persist
     
     //key value
-    Cache.setnx
+    RedisCache.setnx
     
     //list
-    Cache.lpush
-    Cache.rpush
-    Cache.lindex
-    Cache.lrangePage
-    Cache.lrem
+    RedisCache.lpush
+    RedisCache.rpush
+    RedisCache.lindex
+    RedisCache.lrangePage
+    RedisCache.lrem
     
     //set
-    Cache.sadd
-    Cache.sismember
-    Cache.smembers
+    RedisCache.sadd
+    RedisCache.sismember
+    RedisCache.smembers
     
     //hash
-    Cache.hset
-    Cache.hmset
-    Cache.hget
-    Cache.hgetAll
+    RedisCache.hset
+    RedisCache.hmset
+    RedisCache.hget
+    RedisCache.hgetAll
     
     //hyperloglog
-    Cache.pfadd
-    Cache.pfcount
+    RedisCache.pfadd
+    RedisCache.pfcount
   
     //bitmap
-    Cache.setbit
-    Cache.getbit
-    Cache.bitcount
-    Cache.bitop
-    Cache.bitfield
-    Cache.bitpos
+    RedisCache.setbit
+    RedisCache.getbit
+    RedisCache.bitcount
+    RedisCache.bitop
+    RedisCache.bitfield
+    RedisCache.bitpos
   
     //bloomfilter
-    Cache.bloomadd
-    Cache.bloomcons
+    RedisCache.bloomadd
+    RedisCache.bloomcons
 
     //distributed lock
-    Cache.getDistributedLock
-    Cache.releaseDistributedLock
+    RedisCache.getDistributedLock
+    RedisCache.releaseDistributedLock

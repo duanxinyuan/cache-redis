@@ -12,8 +12,6 @@ public interface IMemory {
 
     <T> T get(String key);
 
-    boolean exist(String key);
-
     void del(String key);
 
     void del(String... keys);

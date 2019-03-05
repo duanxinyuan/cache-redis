@@ -2,16 +2,17 @@ package com.dxy.library.cache.memory.guava;
 
 import com.dxy.library.cache.memory.IMemory;
 import com.dxy.library.util.common.config.ConfigUtils;
-import com.google.common.base.Optional;
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -20,11 +21,11 @@ import java.util.concurrent.TimeUnit;
  * 2018/8/8 19:48
  */
 @Slf4j
-public class CacheGuava implements IMemory {
+public class GuavaCache implements IMemory {
 
-    private Cache<String, Optional<Object>> cache;
+    private LoadingCache<String, Optional<Object>> cache;
 
-    public CacheGuava() {
+    public GuavaCache() {
         cache = CacheBuilder.newBuilder()
                 .initialCapacity(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.key.capacity.initial"), 1000))
                 .maximumSize(NumberUtils.toInt(ConfigUtils.getConfig("cache.memory.key.capacity.max"), 5_0000))
@@ -38,10 +39,9 @@ public class CacheGuava implements IMemory {
                     }
                 })
                 .build(new CacheLoader<String, Optional<Object>>() {
-
                     @Override
                     public Optional<Object> load(String key) {
-                        return Optional.fromNullable(get(key));
+                        return Optional.ofNullable(get(key));
                     }
                 });
     }
@@ -54,7 +54,7 @@ public class CacheGuava implements IMemory {
         if (StringUtils.isEmpty(key) || value == null) {
             return;
         }
-        cache.put(key, Optional.fromNullable(value));
+        cache.put(key, Optional.ofNullable(value));
     }
 
     @Override
@@ -63,15 +63,10 @@ public class CacheGuava implements IMemory {
             return null;
         }
         Optional<Object> optional = cache.getIfPresent(key);
-        if (optional == null) {
+        if (!Objects.requireNonNull(optional).isPresent()) {
             return null;
         }
-        return (T) optional.orNull();
-    }
-
-    @Override
-    public boolean exist(String key) {
-        return get(key) != null;
+        return (T) optional.orElse(null);
     }
 
     @Override

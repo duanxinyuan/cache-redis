@@ -1,12 +1,13 @@
 package com.dxy.library.cache.redis.cluster;
 
+import com.google.common.collect.Lists;
+import com.google.gson.reflect.TypeToken;
 import com.dxy.library.cache.redis.IRedis;
 import com.dxy.library.cache.redis.util.BitHashUtil;
 import com.dxy.library.json.gson.GsonUtil;
 import com.dxy.library.util.common.ListUtils;
 import com.dxy.library.util.common.config.ConfigUtils;
-import com.google.common.collect.Lists;
-import com.google.gson.reflect.TypeToken;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -19,7 +20,8 @@ import java.util.*;
  * @author duanxinyuan
  * 2018/8/8 17:52
  */
-public class CacheRedisCluster implements IRedis {
+@Slf4j
+public class RedisClusterCache implements IRedis {
 
     private static final String LOCK_SUCCESS = "OK";
     private static final String SET_IF_NOT_EXIST = "NX";
@@ -28,13 +30,17 @@ public class CacheRedisCluster implements IRedis {
 
     private JedisCluster jedisCluster;
 
-    public CacheRedisCluster() {
+    public RedisClusterCache() {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.connection.max.total"), 100));
         config.setMaxIdle(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.connection.max.idle"), 50));
         config.setMaxWaitMillis(NumberUtils.toInt(ConfigUtils.getConfig("cache.redis.max.wait.millis"), 5000));
         config.setTestOnBorrow(true);
         String hostsStr = ConfigUtils.getConfig("cache.redis.nodes");
+        if (StringUtils.isEmpty(hostsStr)) {
+            log.error("redis cluster init failed, nodes not configured");
+            return;
+        }
         String[] hostPorts = hostsStr.split(",");
         HashSet<HostAndPort> hostSet = new HashSet<>();
         for (String hostPort : hostPorts) {
@@ -530,6 +536,18 @@ public class CacheRedisCluster implements IRedis {
             return null;
         }
         return jedisCluster.hget(key, field);
+    }
+
+    @Override
+    public <T> T hget(String key, String field, Class<T> c) {
+        String hget = hget(key, field);
+        return GsonUtil.from(hget, c);
+    }
+
+    @Override
+    public <T> T hget(String key, String field, TypeToken<T> typeToken) {
+        String hget = hget(key, field);
+        return GsonUtil.from(hget, typeToken);
     }
 
     @Override

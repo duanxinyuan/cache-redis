@@ -26,7 +26,7 @@ public interface CacheType {
         String sentinel="sentinel";
 
         //分片集群模式
-        String shard = "shard";
+        String sharded = "sharded";
 
         //官方集群模式
         String cluster = "cluster";

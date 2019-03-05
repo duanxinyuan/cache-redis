@@ -1,17 +1,18 @@
 package com.dxy.library.cache;
 
+import com.google.gson.reflect.TypeToken;
 import com.dxy.library.cache.constant.CacheType;
 import com.dxy.library.cache.memory.IMemory;
-import com.dxy.library.cache.memory.caffeine.CacheCaffeine;
-import com.dxy.library.cache.memory.guava.CacheGuava;
+import com.dxy.library.cache.memory.caffeine.CaffeineCache;
+import com.dxy.library.cache.memory.guava.GuavaCache;
 import com.dxy.library.cache.redis.IRedis;
-import com.dxy.library.cache.redis.cluster.CacheRedisCluster;
-import com.dxy.library.cache.redis.sentinel.CacheRedisSentinel;
-import com.dxy.library.cache.redis.shard.CacheRedisShard;
-import com.dxy.library.cache.redis.single.CacheRedisSingle;
+import com.dxy.library.cache.redis.cluster.RedisClusterCache;
+import com.dxy.library.cache.redis.sentinel.RedisSentinelCache;
+import com.dxy.library.cache.redis.sharded.RedisShardedCache;
+import com.dxy.library.cache.redis.single.RedisSingleCache;
 import com.dxy.library.json.gson.GsonUtil;
 import com.dxy.library.util.common.config.ConfigUtils;
-import com.google.gson.reflect.TypeToken;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import redis.clients.jedis.BitOP;
@@ -25,7 +26,8 @@ import java.util.Set;
  * @author duanxinyuan
  * 2018/8/9 15:27
  */
-public class Cache {
+@Slf4j
+public class RedisCache {
     private static boolean IS_MEMORY_ENABLE;
 
     private volatile static IMemory memory;
@@ -35,34 +37,42 @@ public class Cache {
         IS_MEMORY_ENABLE = BooleanUtils.toBoolean(ConfigUtils.getConfig("cache.memory.enable", Boolean.class));
         if (IS_MEMORY_ENABLE) {
             String memoryCacheType = ConfigUtils.getConfig("cache.memory.type");
-            switch (memoryCacheType) {
-                case CacheType.Memory.caffeine:
-                    memory = new CacheCaffeine();
-                    break;
-                case CacheType.Memory.guava:
-                    memory = new CacheGuava();
-                    break;
-                default:
-                    break;
+            if (StringUtils.isNotEmpty(memoryCacheType)) {
+                switch (memoryCacheType) {
+                    case CacheType.Memory.caffeine:
+                        memory = new CaffeineCache();
+                        break;
+                    case CacheType.Memory.guava:
+                        memory = new GuavaCache();
+                        break;
+                    default:
+                        break;
+                }
+            }else{
+                log.error("redis cache init failed, memory type not configured");
             }
         }
 
         String redisCacheType = ConfigUtils.getConfig("cache.redis.type");
-        switch (redisCacheType) {
-            case CacheType.Redis.single:
-                redis = new CacheRedisSingle();
-                break;
-            case CacheType.Redis.sentinel:
-                redis = new CacheRedisSentinel();
-                break;
-            case CacheType.Redis.shard:
-                redis = new CacheRedisShard();
-                break;
-            case CacheType.Redis.cluster:
-                redis = new CacheRedisCluster();
-                break;
-            default:
-                break;
+        if (StringUtils.isNotEmpty(redisCacheType)) {
+            switch (redisCacheType) {
+                case CacheType.Redis.single:
+                    redis = new RedisSingleCache();
+                    break;
+                case CacheType.Redis.sentinel:
+                    redis = new RedisSentinelCache();
+                    break;
+                case CacheType.Redis.sharded:
+                    redis = new RedisShardedCache();
+                    break;
+                case CacheType.Redis.cluster:
+                    redis = new RedisClusterCache();
+                    break;
+                default:
+                    break;
+            }
+        }else{
+
         }
     }
 
