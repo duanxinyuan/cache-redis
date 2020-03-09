@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.duanxinyuan</groupId>
-    <artifactId>library-cache-redis</artifactId>
+    <artifactId>cache-redis</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
@@ -37,7 +37,7 @@
 
     <name>cache-redis</name>
     <url>https://github.com/duanxinyuan/cache-redis.git</url>
-    <description>Redis缓存库，支持caffeine、guava、redis、redis-sentinel、redis-sharding、redis-cluster，支持两级缓存配置，支持布隆过滤器，支持Redis分布式锁</description>
+    <description>Redis缓存库，支持single/sentinel/sharded/cluster四种集群方式，支持布隆过滤器，支持分布式锁</description>
 
     <scm>
         <connection>scm:git@github.com:duanxinyuan/cache-redis.git</connection>
@@ -54,35 +54,72 @@
     </developers>
 
     <properties>
+        <cache-redis.version>1.0.0</cache-redis.version>
+        <util-config.version>1.0.0</util-config.version>
+
+        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <maven.test.skip>true</maven.test.skip>
+
+        <slf4j-api.version>1.7.30</slf4j-api.version>
+        <lombok.version>1.18.12</lombok.version>
+        <junit.version>4.12</junit.version>
+        <log4j2.version>2.12.1</log4j2.version>
+
+        <jedis.version>2.10.2</jedis.version>
+
+        <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+        <flatten-maven-plugin.version>1.1.0</flatten-maven-plugin.version>
     </properties>
 
     <dependencies>
         <dependency>
+            <groupId>com.github.duanxinyuan</groupId>
+            <artifactId>util-config</artifactId>
+            <version>${util-config.version}</version>
+        </dependency>
+        <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
+            <version>${jedis.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-            <version>2.6.2</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j-api.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>com.github.duanxinyuan</groupId>
-            <artifactId>library-util-common</artifactId>
-            <version>1.2.0</version>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!--Log4j2-Test-->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>${log4j2.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <version>${log4j2.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -92,11 +129,38 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.0</version>
+                <version>${maven-compiler-plugin.version}</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>${flatten-maven-plugin.version}</version>
+                <configuration>
+                    <!--是否更新pom文件-->
+                    <updatePomFile>true</updatePomFile>
+                    <!--仅解析变量版本，sha1和变更列表。保留其他所有内容。有关更多详细信息，请参见Maven CI Friendly。-->
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

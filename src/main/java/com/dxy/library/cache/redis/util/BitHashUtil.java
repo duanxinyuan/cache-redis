@@ -1,6 +1,5 @@
 package com.dxy.library.cache.redis.util;
 
-import com.dxy.library.json.gson.GsonUtil;
 import redis.clients.util.MurmurHash;
 
 import java.nio.charset.StandardCharsets;
@@ -33,12 +32,7 @@ public class BitHashUtil {
      */
     public static <T> long[] murmurHash(T value, int hashFunctionCount, long maxBitCount) {
         long[] offsets = new long[hashFunctionCount];
-        byte[] bytes;
-        if (value instanceof String) {
-            bytes = ((String) value).getBytes(StandardCharsets.UTF_8);
-        } else {
-            bytes = GsonUtil.to(value).getBytes(StandardCharsets.UTF_8);
-        }
+        byte[] bytes = Serializer.serialize(value).getBytes(StandardCharsets.UTF_8);
         int hash1 = MurmurHash.hash(bytes, 0);
         int hash2 = MurmurHash.hash(bytes, hash1);
         for (int i = 0; i < hashFunctionCount; ++i) {
