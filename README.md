@@ -1,9 +1,11 @@
 # cache-redis
 
-* Redis缓存库，支持所有Redis数据结构（string/list/set/hash/sortedSet/bitmap）
+* Redis缓存库，支持绝大部分Redis数据结构（string/list/hash/set/sortedSet/bitmap/hyperloglog/geohash/bloom）
 * 支持single/sentinel/sharded/cluster四种集群方式
 * 支持布隆过滤器
 * 支持分布式锁
+* 支持HyperLogLog、BitMap、GeoHash等特殊的数据结构
+* 支持lua脚本
 
 ## Maven依赖：
 
